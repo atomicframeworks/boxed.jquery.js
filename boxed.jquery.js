@@ -39,8 +39,8 @@ $(function () {
                             position: 'absolute',
                             top: '50%',
                             left: '50%',
-                            padding: '30px',
                             margin: '0 auto',
+                            padding: '30px',
                             'background-color': '#fff'
                         },
                         // Styles for .boxed-close
@@ -50,7 +50,6 @@ $(function () {
                             right: '10px',
                             width: '10px',
                             height: '10px',
-                            float: 'right',
                             'font-size': '16px',
                             'font-weight': 'bold',
                             'text-decoration': 'none',
