@@ -1,18 +1,26 @@
-$(function(){
-    (function ( $ ) {
-     
-        $.fn.boxed = function( options ) {
-            
-            function center(){
-                // Grab the modal
-                var $boxedModal = $('.boxed-modal');
+/*!
                         
-                // Vertical - half outer height (height + padding)
-                var top = ($boxedModal.outerHeight() / 2);
-            
-                // Horizontal - half outer width (width + padding)            
-                var left = ($boxedModal.outerWidth() / 2);
-            
+       ##    #####      Copyright (c) - Kevin McGinty
+     # _ #  ###        
+    #   #  #            AtomicFrameworks
+    
+*/
+/*global $, jQuery*/
+
+$(function () {
+    "use strict";
+    (function ($) {
+        $.fn.boxed = function (method, options) {
+            var that = this,
+                // Defaults that will be extended with options
+                settings;
+            that.center = function () {
+                // Grab the modal
+                var $boxedModal = $('.boxed-modal'),
+                    // Vertical - half outer height (height + padding)
+                    top = ($boxedModal.outerHeight() / 2),
+                    // Horizontal - half outer width (width + padding)            
+                    left = ($boxedModal.outerWidth() / 2);
                 // Reset to 50%
                 $boxedModal.css({
                     top: '50%',
@@ -24,17 +32,26 @@ $(function(){
                     'margin-left': '-=' + left,
                     'margin-top': '-=' + top
                 });
-            
-            }
-            
-            function close(){
-                $('.boxed-container').fadeOut(100, function(){
+            };
+            that.close = function () {
+                $('.boxed-container').fadeOut(100, function () {
                     $(this).remove();
-                });  
+                });
+            };
+            if (typeof method === 'string' || method instanceof String) {
+                // If method is a string try to call the method
+                try {
+                    this[method]();
+                } catch (e) {
+                    throw new Error(e);
+                }
+            } else if (typeof method === 'object' || method instanceof Object) {
+                // Method is an object (not a string)so probably option set
+                options = method;
             }
-            
+
             // This is the easiest way to have default options.
-            var settings = $.extend(true, {
+            settings = $.extend(true, {
                 // These are the defaults.
                 'class': '',
                 // If containerClose is true clicking the main container will close the boxed
@@ -54,7 +71,7 @@ $(function(){
                     },
                     // Styles for .boxed-modal
                     modal: {
-                        overflow: 'hidden',
+                        overflow: 'visible',
                         position: 'absolute',
                         top: '50%',
                         left: '50%',
@@ -85,71 +102,59 @@ $(function(){
                         color: '#00aaef'
                     }
                 }
-            }, options );
-        
-            this.on('click.boxed', function(e){
+            }, options);
+            // On click bind
+            this.on('click.boxed', function (e) {
                 e.preventDefault();
-                console.log(1);
                 // Construct boxed element
                 var $boxed = $(
-                    '<div class="boxed-container ' + settings.class + '">' +
-                    '    <div class="boxed-modal">' +
-                    '        <div class="boxed-content"></div>' +
-                    '        <span class="boxed-close">X</span>' +
-                    '    </div>' +
-                    '</div>'
-                );
-                                
+                    '<div class="boxed-container ' + settings['class'] + '">' +
+                        '<div class="boxed-modal">' +
+                            '<div class="boxed-content"></div>' +
+                            '<span class="boxed-close">X</span>' +
+                        '</div>' +
+                        '</div>'
+                ),
+                    $boxedContainer,
+                    $boxedClose,
+                    url;
+                // Add the boxed element
                 $('body').append($boxed);
-              
                 // Apply the container styles
-                var $boxedContainer = $('.boxed-container').css( settings.styles.container );
-                
+                $boxedContainer = $('.boxed-container').css(settings.styles.container);
                 // Apply the modal styles
-                var $boxedModal = $boxedContainer.find('.boxed-modal').css( settings.styles.modal );
-                
+                $boxedContainer.find('.boxed-modal').css(settings.styles.modal);
                 // Apply the close button styles
-                var $boxedClose = $boxedContainer.find('.boxed-close').css( settings.styles.close );
-                
+                $boxedClose = $boxedContainer.find('.boxed-close').css(settings.styles.close);
                 // REPLACE THIS
-                var url = $(this).attr('href');
-                
+                url = $(this).attr('href');
                 // Close button binds
-                $boxedClose.on('click.boxed', function() {
-                    close();
-                }).on('mouseenter.boxed', function() {
+                $boxedClose.on('click.boxed', function () {
+                    that.close();
+                }).on('mouseenter.boxed', function () {
                     // Apply the mouse enter styles
                     $(this).css(settings.styles.closeMouseEnter);
-                }).on('mouseleave.boxed', function() {
+                }).on('mouseleave.boxed', function () {
                     // Apply the mouse leave styles
-                    $(this).css(settings.styles.closeMouseLeave);                
+                    $(this).css(settings.styles.closeMouseLeave);
                 });
-                
                 // If containerClose is true allow clicking the main container to close the boxed
                 if (settings.containerClose) {
-                    $boxedContainer.on('click', function(e){
+                    $boxedContainer.on('click', function (e) {
                         // If outer container
-                        if($(e.target).is(this)){
-                            close();
+                        if ($(e.target).is(this)) {
+                            that.close();
                         }
                     });
                 }
-                
-                $boxedContainer.find('.boxed-content').load(url, function (){
+                // Load the URL to the boxed content
+                $boxedContainer.find('.boxed-content').load(url, function () {
                     $boxedContainer.fadeIn();
-                    center();
+                    that.center();
                 });
-                
-                //center();    
-                
             });
-            
-            // Greenify the collection based on the settings variable.
+            // Return this for chaining
             return this;
         };
- 
-    }( jQuery ));
-    
-    $('.one a').boxed();
-    
+    }(jQuery));
 });
