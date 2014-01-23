@@ -12,8 +12,62 @@ $(function () {
     (function ($) {
         $.fn.boxed = function (method, options) {
             var that = this,
-                // Defaults that will be extended with options
-                settings;
+                // Default settings that will be extended with options
+                settings = {
+                    // These are the defaults.
+                    'class': '',
+                    // If containerClose is true clicking the main container will close the boxed
+                    containerClose: false,
+                    // Text in the .boxed-close element
+                    closeText: 'X',
+                    // Styles to apply
+                    styles: {
+                        // Styles for .boxed-container
+                        container: {
+                            position: 'fixed',
+                            display: 'none',
+                            top: '0',
+                            left: '0',
+                            width: '100%',
+                            height: '100%',
+                            'background-color': 'rgba(0, 0, 0, .80)',
+                            'z-index': 999
+                        },
+                        // Styles for .boxed-modal
+                        modal: {
+                            overflow: 'visible',
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            padding: '30px',
+                            margin: '0 auto',
+                            'background-color': '#fff'
+                        },
+                        // Styles for .boxed-close
+                        close: {
+                            position: 'absolute',
+                            top: '10px',
+                            right: '10px',
+                            width: '10px',
+                            height: '10px',
+                            float: 'right',
+                            'font-size': '16px',
+                            'font-weight': 'bold',
+                            'text-decoration': 'none',
+                            color: '#00aaef',
+                            cursor: 'pointer'
+                        },
+                        // Styles for .boxed-close:hover
+                        closeMouseEnter: {
+                            color: '#00c3ff'
+                        },
+                        // Styles to reset .boxed-close:hover
+                        closeMouseLeave: {
+                            color: '#00aaef'
+                        }
+                    }
+                };
+            // Method to center the boxed element
             that.center = function () {
                 // Grab the modal
                 var $boxedModal = $('.boxed-modal'),
@@ -33,11 +87,13 @@ $(function () {
                     'margin-top': '-=' + top
                 });
             };
+            // Method to close the boxed element
             that.close = function () {
                 $('.boxed-container').fadeOut(100, function () {
                     $(this).remove();
                 });
             };
+            // Check if we are calling a method or just setting options
             if (typeof method === 'string' || method instanceof String) {
                 // If method is a string try to call the method
                 try {
@@ -49,72 +105,22 @@ $(function () {
                 // Method is an object (not a string)so probably option set
                 options = method;
             }
-
-            // This is the easiest way to have default options.
-            settings = $.extend(true, {
-                // These are the defaults.
-                'class': '',
-                // If containerClose is true clicking the main container will close the boxed
-                containerClose: false,
-                // Styles to apply
-                styles: {
-                    // Styles for .boxed-container
-                    container: {
-                        position: 'fixed',
-                        display: 'none',
-                        top: '0',
-                        left: '0',
-                        width: '100%',
-                        height: '100%',
-                        'background-color': 'rgba(0, 0, 0, .80)',
-                        'z-index': 9999
-                    },
-                    // Styles for .boxed-modal
-                    modal: {
-                        overflow: 'visible',
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        padding: '30px',
-                        margin: '0 auto',
-                        'background-color': '#fff'
-                    },
-                    // Styles for .boxed-close
-                    close: {
-                        position: 'absolute',
-                        top: '10px',
-                        right: '10px',
-                        width: '10px',
-                        height: '10px',
-                        float: 'right',
-                        'font-size': '16px',
-                        'font-weight': 'bold',
-                        'text-decoration': 'none',
-                        color: '#00aaef',
-                        cursor: 'pointer'
-                    },
-                    // Styles for .boxed-close:hover
-                    closeMouseEnter: {
-                        color: '#00c3ff'
-                    },
-                    // Styles to reset .boxed-close:hover
-                    closeMouseLeave: {
-                        color: '#00aaef'
-                    }
-                }
-            }, options);
+            // Merge options with default settings
+            settings = $.extend(true, settings, options);
+            // If containerClose enabled add extra style for container element
+            if (settings.containerClose && (settings.styles.container.cursor === null || settings.styles.container.cursor === undefined)) {
+                settings.styles.container.cursor = 'pointer';
+            }
             // On click bind
             this.on('click.boxed', function (e) {
                 e.preventDefault();
                 // Construct boxed element
-                var $boxed = $(
-                    '<div class="boxed-container ' + settings['class'] + '">' +
-                        '<div class="boxed-modal">' +
-                            '<div class="boxed-content"></div>' +
-                            '<span class="boxed-close">X</span>' +
-                        '</div>' +
-                        '</div>'
-                ),
+                var $boxed = $('<div class="boxed-container ' + settings['class'] + '">' +
+                    '               <div class="boxed-modal">' +
+                    '                   <div class="boxed-content"></div>' +
+                    '                   <span class="boxed-close">' + settings.closeText + '</span>' +
+                    '               </div>' +
+                    '           </div>'),
                     $boxedContainer,
                     $boxedClose,
                     url;
