@@ -17,7 +17,7 @@ $(function () {
             if (settings.containerClose && (settings.styles.container.cursor === null || settings.styles.container.cursor === undefined)) {
                 settings.styles.container.cursor = 'pointer';
             }
-            // On click bind
+            // Bind clicks
             this.on('click.boxed', function (e) {
                 e.preventDefault();
                 // Construct boxed element
@@ -84,7 +84,7 @@ $(function () {
                     });
                 }, 100);
                 // Center and show the new spinner
-                $.fn.boxed.center();
+                $.fn.boxed.center(0, $boxedModal);
                 $boxedContainer.fadeIn();
                 // Create a clone of boxed to hold the loaded content temporarily
                 $clone = $boxedContainer.clone();
@@ -131,27 +131,31 @@ $(function () {
             return this;
         };
         // Method to center the boxed element
-        $.fn.boxed.center = function (time) {
+        $.fn.boxed.center = function (time, $boxedModal) {
             if (!time) {
                 time = 0;
             }
-            // Grab the modal
-            var $boxedModal = $('.boxed-modal'),
+            if (!$boxedModal) {
+                // Grab the modal if none passed
+                $boxedModal = $('.boxed-container .boxed-modal');
+            }
+            if ($boxedModal.length) {
                 // Vertical - half outer height (height + padding)
-                top = ($boxedModal.outerHeight() / 2),
-                // Horizontal - half outer width (width + padding)            
-                left = ($boxedModal.outerWidth() / 2);
-            // Reset to 50%
-            $boxedModal.css({
-                top: '50%',
-                left: '50%',
-                'margin-left': '0',
-                'margin-top': '0'
-            }).animate({
-                // Adjust to center
-                'margin-left': '-=' + left,
-                'margin-top': '-=' + top
-            }, time);
+                var top = ($boxedModal.outerHeight() / 2),
+                    // Horizontal - half outer width (width + padding)            
+                    left = ($boxedModal.outerWidth() / 2);
+                // Reset to 50%
+                $boxedModal.css({
+                    top: '50%',
+                    left: '50%',
+                    'margin-left': '0',
+                    'margin-top': '0'
+                }).animate({
+                    // Adjust to center
+                    'margin-left': '-=' + left,
+                    'margin-top': '-=' + top
+                }, time);
+            }
         };
         // Method to close the boxed element
         $.fn.boxed.close = function () {
