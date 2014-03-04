@@ -193,6 +193,7 @@ $(function () {
                     margin: '0 auto',
                     padding: '30px',
                     'background-color': '#fff',
+                    cursor: 'default',
                     '-webkit-transition': 'height 1s ease, width 1s ease',
                     '-moz-transition': 'height 1s ease, width 1s ease',
                     '-ms-transition': 'height 1s ease, width 1s ease',
